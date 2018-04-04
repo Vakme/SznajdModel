@@ -1,11 +1,11 @@
 <template>
-    <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
+    <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 row">
       <a class="navbar-brand col-sm-8 col-md-4 mr-0" href="#">Automaty komórkowe - pierwszy projekt</a>
-      <ul class="navbar-nav col-md-1 px-3" v-for="link in links">
-        <li class="nav-item text-nowrap">
-          <a class="nav-link" v-bind:href="link.href">{{ link.txt }}</a>
-        </li>
-      </ul>
+      <div class="nav px-3">
+          <span class="nav-item" v-for="link in links">
+            <a class="nav-link" v-bind:href="link.href" target="_blank">{{ link.txt }}</a>
+          </span>
+        </div>
     </nav>
 </template>
 
@@ -16,8 +16,12 @@
       return {
           links: [
             {
-                href: '#',
+                href: 'https://github.com/Vakme/cellularAutomata',
                 txt: 'Github'
+            },
+            {
+              href: '#',
+              txt: 'Sprawozdanie'
             }
           ]
       }
@@ -33,5 +37,8 @@
     font-size: 1rem;
     background-color: rgba(0, 0, 0, .25);
     box-shadow: inset -1px 0 0 rgba(0, 0, 0, .25);
+  }
+  a, a:hover {
+    color: whitesmoke;
   }
 </style>

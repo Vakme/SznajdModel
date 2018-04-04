@@ -68,7 +68,7 @@
       return {
         config: {
           nameNumber: 90,
-          startNum: '1',
+          startNum: '',
           maskNumber: []
           },
         types: {
@@ -82,16 +82,18 @@
         }
     },
     methods: {
-      nullMsg() {
-        console.log('PIMP');
-        this.msg = null;
-      },
       save (event) {
-        if (event) {
+        if (event && this.validateConfig()) {
           EventBus.$emit('NEW_CONFIG', this.config);
-          this.msg = 'Zapisano. Wciśnij PLAY';
-          setTimeout(this.nullMsg, 1000);
+          this.$snotify.success('Zapisano. Wciśnij PLAY');
         }
+      },
+      validateConfig() {
+        if(this.config.startNum.match(/^[0-1]+$/) || !(this.config.startNum.length > 0)) {
+          return true;
+        }
+        this.$snotify.error('Nieprawidłowe wartości startowe');
+        return false;
       },
       resetConfig () {
         Object.keys(this.types).forEach(key => this.types[key] = false);
@@ -128,15 +130,12 @@
         else if(this.types.voting) {
           let maskSet = new Set(this.config.maskNumber);
           let ones = rule.split('0').join('').length;
-          console.log(maskSet);
-          console.log('=========');
           if(ones === 2) {
             maskSet = this.checkValue(maskSet.add(this.rules.findIndex(el => el === rule)), new Set([3,5,6]));
           }
           else if(ones === 1) {
             maskSet = this.checkValue(maskSet.add(this.rules.findIndex(el => el === rule)), new Set([1,2,4]));
           }
-          console.log(maskSet);
           this.config.maskNumber = [...maskSet];
         }
         for(let item of this.config.maskNumber) {
