@@ -10,7 +10,7 @@ export default {
       labels: [],
       datasets: [{
         label: 'Odleglosc Hamminga',
-        data: [0,2,3],
+        data: [],
       }],
     };
     this.renderChart(this.chartData, this.options);

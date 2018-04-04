@@ -10,13 +10,13 @@
                 <label for="automataStart">Numer startowy automatu</label>
                 <input type="text" class="form-control" id="automataStart" aria-describedby="startHelp"
                        v-model="config.startNum">
-                <small id="startHelp" class="form-text text-muted">Wprowadź ciąg 0 i 1, pusty generuje losowy ciąg</small>
+                <small id="startHelp" class="form-text text-muted">Wprowadz ciag 0 i 1, pusty generuje losowy</small>
               </div>
             <div class="form-group">
               <label for="automataName">Nazwa automatu</label>
               <input type="number" class="form-control" id="automataName" aria-describedby="nameHelp" value="0"
                      v-model="config.nameNumber" :disabled="!types.named" @change="handleNum">
-              <small id="nameHelp" class="form-text text-muted">Wprowadź nazwę</small>
+              <small id="nameHelp" class="form-text text-muted">Wprowadz nazwe</small>
             </div>
 
 
@@ -33,7 +33,7 @@
                   <input type="checkbox" id="'automataMask' + rule" :ref="'automataMask' + rule" aria-describedby="maskHelp" :value="index" v-model="config.maskNumber" :disabled="disableCheckbox('automataMask' + rule)" @change="handleCheck(rule)">
                 </div>
               </div>
-              <small id="maskHelp" class="form-text text-muted">Zaznacz maskę</small>
+              <small id="maskHelp" class="form-text text-muted">Zaznacz maske</small>
             </div>
 
               <div class="btn-group-vertical btn-group-toggle" data-toggle="buttons">
@@ -47,15 +47,14 @@
                   Legalny
                 </button>
                 <button class="btn btn-outline-secondary" v-bind:class="{ active: types.voting }" v-on:click="types.voting=saveType()">
-                  Głosujący
+                  Glosujacy
                 </button>
               </div>
               <small id="typeHelp" class="form-text text-muted">Wybierz rodzaj konfiguracji automatu</small>
           </div>
         </fieldset>
-      <div class="msg">{{ msg }}</div>
-        <button class="btn btn-dark" v-on:click="save">Zapisz konfigurację</button>
     </div>
+    <button class="btn btn-dark my-3" v-on:click="save">Zapisz konfiguracje</button>
   </nav>
 </template>
 
@@ -78,21 +77,20 @@
           voting: false
           },
         rules: ['111', '110', '101', '100', '011', '010', '001', '000'].reverse(),
-        msg: ''
         }
     },
     methods: {
       save (event) {
         if (event && this.validateConfig()) {
           EventBus.$emit('NEW_CONFIG', this.config);
-          this.$snotify.success('Zapisano. Wciśnij PLAY');
+          this.$snotify.success('Zapisano. Wcisnij PLAY');
         }
       },
       validateConfig() {
         if(this.config.startNum.match(/^[0-1]+$/) || !(this.config.startNum.length > 0)) {
           return true;
         }
-        this.$snotify.error('Nieprawidłowe wartości startowe');
+        this.$snotify.error('Nieprawidlowe wartosci startowe');
         return false;
       },
       resetConfig () {
@@ -144,7 +142,7 @@
       },
       handleNum() {
         this.config.maskNumber = [];
-        let bin = this.dec2bin(this.config.nameNumber).padStart(8, '0').split('');
+        let bin = this.dec2bin(this.config.nameNumber).padStart(8, '0').split('').reverse();
         for(let key in bin)
           if(bin[key] === '1')
             this.config.maskNumber.push(key);
@@ -188,7 +186,7 @@
     top: 48px;
     bottom: 0;
     left: 0;
-    z-index: 100; /* Behind the navbar */
+    z-index: 100;
     padding: 0;
     box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
     text-align: center;
@@ -197,10 +195,10 @@
   .sidebar-sticky {
     position: -webkit-sticky;
     position: sticky;
-    height: calc(100vh - 48px);
+    height: calc(100vh - 48px - 70px);
     padding-top: .5rem;
     overflow-x: hidden;
-    overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+    overflow-y: auto;
   }
 
   .sidebar .nav-link {
@@ -231,8 +229,5 @@
   }
   label, .table {
     margin-bottom: 0;
-  }
-  .msg {
-    color: crimson;
   }
 </style>
