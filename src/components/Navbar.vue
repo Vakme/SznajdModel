@@ -20,7 +20,7 @@
                 txt: 'Github'
             },
             {
-              href: '#',
+              href: './assets/Automaty1.pdf',
               txt: 'Sprawozdanie'
             }
           ]

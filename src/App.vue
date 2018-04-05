@@ -70,7 +70,7 @@ export default {
       cellularWidth: 3,
       maxAutomata: 0,
       baseAutomata: [],
-      nameNumber: 112,
+      nameNumber: 90,
       rules: '',
       timeout: null,
       canPlay: false,
