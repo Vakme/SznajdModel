@@ -16,11 +16,11 @@
       return {
           links: [
             {
-                href: 'https://github.com/Vakme/cellularAutomata',
+                href: 'https://github.com/Vakme/SznajdModel',
                 txt: 'Github'
             },
             {
-              href: './assets/Automaty1.pdf',
+              href: './assets/Automaty2.pdf',
               txt: 'Sprawozdanie'
             }
           ]
