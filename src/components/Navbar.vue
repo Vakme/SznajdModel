@@ -1,6 +1,6 @@
 <template>
     <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
-      <a class="navbar-brand col-sm-8 col-md-4 mr-0" href="#">Automaty komorkowe - Model Sznajdów</a>
+      <a class="navbar-brand col-sm-8 col-md-4 mr-0" href="#">Automaty komorkowe - Model Sznajdow</a>
       <div class="nav col-md-3">
           <span class="nav-item" v-for="link in links">
             <a class="nav-link" v-bind:href="link.href" target="_blank">{{ link.txt }}</a>

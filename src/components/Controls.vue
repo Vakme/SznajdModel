@@ -3,12 +3,12 @@
     <h1 class="h2">Dashboard</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
       <div class="btn-group mr-2">
-        <label>Poróżnianie: </label>
+        <label>Poroznianie: </label>
         <button class="btn btn-sm btn-outline-secondary" :class="{ active: !isDiffer }" v-on:click="noDiffer">BRAK</button>
-        <button class="btn btn-sm btn-outline-secondary" :class="{ active: isDiffer }" v-on:click="differ">PORÓŻNIJ</button>
+        <button class="btn btn-sm btn-outline-secondary" :class="{ active: isDiffer }" v-on:click="differ">POROZNIJ</button>
       </div>
       <div class="mr-2">
-        <label for="speed">Prędkość: </label>
+        <label for="speed">Predkosc: </label>
         <input type=range id="speed" min=0 max=950 step=50 v-model="speed" v-on:change="speedChange">
       </div>
       <div class="btn-group mr-2">
