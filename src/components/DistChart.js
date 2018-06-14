@@ -9,7 +9,7 @@ export default {
     this.chartData = {
       labels: [],
       datasets: [{
-        label: 'Odleglosc Hamminga',
+        label: 'Procent granatowej opinii',
         data: [],
       }],
     };

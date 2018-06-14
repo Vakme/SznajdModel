@@ -3,25 +3,30 @@
     <navbar></navbar>
     <div class="container-fluid">
       <div class="row">
-        <sidebar></sidebar>
-        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+        <!--<sidebar></sidebar>-->
+        <main role="main" class="col-md-12 ml-sm-auto col-lg-12 pt-3 px-4">
           <controls></controls>
           <div class="row">
-            <div class="col-4">
-              <canvas-draw :row="rowArr" :clearCanvas="clearCanvas" :draw="draw"></canvas-draw>
+            <div class="col-12 text-center">
+              <canvas-draw
+                :row="rowArr"
+                :clearCanvas="clearCanvas"
+                :draw="draw"
+                :chosenIndex="index"
+                :canvasHeight="cellularWidth"></canvas-draw>
+              <canvas-draw
+                :row="rowArr"
+                :clearCanvas="clearCanvas"
+                :draw="draw"
+                :chosenIndex="index"
+                :canvasHeight="canvasHeight"></canvas-draw>
             </div>
-            <div class="col-4">
-              <canvas-draw :row="randRowArr" :clearCanvas="clearCanvas" :draw="draw"></canvas-draw>
-            </div>
-            <div class="col-4">
-              <canvas-draw :row="diffRowArr" :clearCanvas="clearCanvas" :draw="draw"></canvas-draw>
-            </div>
-            <div class="chart col-md-8">
+            <div class="chart col-md-12">
               <line-chart :chart-data="chartData"
                           :hammingDist="hammingDist"
                           :options="chartOptions"
                           :height="200"
-                          :width="600"></line-chart>
+                          :width="1000"></line-chart>
             </div>
           </div>
         </main>
@@ -66,27 +71,30 @@ export default {
       chartData: null,
       draw: false,
       clearCanvas: true,
-      canvasWidth: 330,
-      cellularWidth: 3,
+      canvasWidth: 990,
+      canvasHeight: 270,
+      cellularWidth: 10,
       maxAutomata: 0,
       baseAutomata: [],
       nameNumber: 90,
       rules: '',
       timeout: null,
       canPlay: false,
-      timer: 50,
+      timer: 500,
       startRow: null,
       configStart: null,
       rowArr: '',
-      randRowArr: '',
-      diffRowArr: '',
-      hammingDist: []
+      hammingDist: [],
+      index: null,
+      differ: false
     }
   },
   mounted () {
     EventBus.$on('PLAY', this.played);
     EventBus.$on('PAUSE', this.paused);
     EventBus.$on('RESET', this.cleared);
+    EventBus.$on('SPEED', this.speedChanged);
+    EventBus.$on('TYPE', this.typeChanged);
     EventBus.$on('NEW_CONFIG', this.saved);
 
     this.rules = this.dec2bin(this.nameNumber).padStart(8, '0').split("").reverse().map(value => parseInt(value));
@@ -105,6 +113,14 @@ export default {
       if(this.canPlay)
         this.canPlay = false;
     },
+    speedChanged(speed) {
+      console.log('SPEED');
+      this.timer = 1000 - speed;
+    },
+    typeChanged(differ) {
+      this.differ = differ;
+      this.cleared();
+    },
     cleared() {
       console.log('RESET');
       this.startRow = null;
@@ -114,7 +130,7 @@ export default {
       this.chartData = {
         labels: ''.padEnd(50, ' ').split(''),
         datasets: [{
-          label: 'Odleglosc Hamminga',
+          label: 'Procent granatowej opinii',
           data: this.hammingDist,
         }],
       };
@@ -136,56 +152,48 @@ export default {
 
           this.cleared();
       },
-      countDiff(orig, rand) {
-            let arr = '';
-            let hDist = 0;
-            for(let i = 0; i < orig.length; i++) {
-              if(orig[i] === rand[i])
-                arr += '0';
-              else {
-                arr += '1';
-                hDist++;
-              }
-            }
-            if(this.hammingDist.length > 50)
-              this.hammingDist.shift();
-            this.hammingDist.push(hDist);
-            this.chartData = {
-              labels: ''.padEnd(50, ' ').split(''),
-              datasets: [{
-                label: 'Odleglosc Hamminga',
-                data: this.hammingDist,
-              }],
-            };
-            return arr;
-      },
       baseDraw() {
         if(this.clearCanvas) {
             let row = this.fillArr();
-            let randRow = this.randArr(row);
-            setTimeout(this.drawRow, this.timer, row, randRow);
+            setTimeout(this.drawRow, this.timer, row);
         }
         else {
           setTimeout(this.drawRow, this.timer);
         }
       },
 
-      drawRow(baseRow = this.rowArr, randRow = this.randRowArr) {
+    countSize(row) {
+      let hDist = 0;
+      for(let i = 0; i < row.length; i++) {
+        if(row[i] === '1') {
+          hDist++;
+        }
+      }
+      if(this.hammingDist.length > 100)
+        this.hammingDist.shift();
+      this.hammingDist.push(hDist/row.length*100);
+      this.chartData = {
+        labels: ''.padEnd(100, ' ').split(''),
+        datasets: [{
+          label: 'Procent granatowej opinii',
+          data: this.hammingDist
+        }],
+      };
+    },
+      drawRow(baseRow = this.rowArr) {
         if(!this.canPlay) {
           this.startRow = baseRow;
           clearTimeout(this.timeout);
           return;
         }
         this.clearCanvas = false;
-        if(baseRow !== this.rowArr && randRow !== this.randRowArr) {
+        if(baseRow !== this.rowArr) {
           this.rowArr = baseRow;
-          this.randRowArr = randRow;
         }
         else {
           this.rowArr = this.calculateNextRow(baseRow);
-          this.randRowArr = this.calculateNextRow(randRow);
         }
-        this.diffRowArr = this.countDiff(baseRow, randRow);
+        this.countSize(this.rowArr);
         this.draw = !this.draw;
         setTimeout(this.drawRow, this.timer);
 
@@ -196,25 +204,32 @@ export default {
       dec2bin(dec){
         return (dec >>> 0).toString(2);
       },
-      calculateNextRow(arr) {
-        let rowToMatch = arr;
-        let len = rowToMatch.length;
-        let newRow = "";
-        let ind = 0;
-        let thisNum = "";
-        rowToMatch.split("").forEach((value, index) => {
-          if(index < this.maxAutomata) {
-            if(index === 0)
-              thisNum = rowToMatch[len-1] + rowToMatch[0] + rowToMatch[1];
-            else if(index === len-1)
-              thisNum = rowToMatch[len-2] + rowToMatch[len-1] + rowToMatch[0];
-            else
-              thisNum = rowToMatch[index-1] + rowToMatch[index] + rowToMatch[index + 1];
-            ind = parseInt(thisNum, 2);
-            newRow += this.rules[ind];
-          }
-        });
-        return newRow;
+      calculateNextRow(oldRow) {
+        let a = 0;
+        let b = 0;
+        let arr = oldRow.split("");
+        for(let i = 1; i < arr.length-1; i++) {
+          if(arr[i]>1)
+            arr[i] = arr[i] - 2;
+        }
+        let newRow = arr;
+        let i = Math.floor((Math.random() * (arr.length-2)));
+        this.index = i;
+        if(arr[i] === arr[i+1]) {
+            a = arr[i];
+            newRow[i-1] = a;
+            newRow[i+2] = a;
+        }
+        else if(this.differ) {
+            a = arr[i+1];
+            b = arr[i];
+            newRow[i-1] = a;
+            newRow[i+2] = b;
+        }
+        console.log('    ');
+        console.log(arr.length);
+        console.log(newRow.length);
+        return newRow.join("");
       },
     fillArr() {
       if(this.configStart) return this.configStart;
@@ -222,11 +237,6 @@ export default {
         for(let i = 0; i < (this.canvasWidth/this.cellularWidth); i++)
           arr+=this.dec2bin(this.randomByte());
         return arr;
-    },
-    randArr(arr) {
-      let randArr = arr.split(''), randInd = Math.floor(Math.random()*arr.length);
-      randArr[randInd] === '0' ? randArr[randInd] = 1 : randArr[randInd] = 0;
-      return randArr.join('');
     }
   }
 }
@@ -239,6 +249,9 @@ export default {
   .chart {
     height: 200px;
     margin: auto;
+    text-align: center;
+    display: flex;
+    justify-content: center;
   }
 
 

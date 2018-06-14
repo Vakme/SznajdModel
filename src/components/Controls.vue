@@ -3,6 +3,15 @@
     <h1 class="h2">Dashboard</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
       <div class="btn-group mr-2">
+        <label>Poróżnianie: </label>
+        <button class="btn btn-sm btn-outline-secondary" :class="{ active: !isDiffer }" v-on:click="noDiffer">BRAK</button>
+        <button class="btn btn-sm btn-outline-secondary" :class="{ active: isDiffer }" v-on:click="differ">PORÓŻNIJ</button>
+      </div>
+      <div class="mr-2">
+        <label for="speed">Prędkość: </label>
+        <input type=range id="speed" min=0 max=950 step=50 v-model="speed" v-on:change="speedChange">
+      </div>
+      <div class="btn-group mr-2">
         <button class="btn btn-sm btn-outline-secondary" v-on:click="play">PLAY</button>
         <button class="btn btn-sm btn-outline-secondary" v-on:click="pause">PAUSE</button>
         <button class="btn btn-sm btn-outline-secondary" v-on:click="reset">RESET</button>
@@ -18,6 +27,8 @@
     name: 'Controls',
     data () {
       return {
+        speed: 0,
+        isDiffer: false
       }
     },
     methods: {
@@ -35,6 +46,23 @@
         if (event) {
           EventBus.$emit('RESET');
         }
+      },
+      speedChange: function (event) {
+        if (event) {
+          EventBus.$emit('SPEED', this.speed);
+        }
+      },
+      noDiffer: function (event) {
+        if (event) {
+          this.isDiffer = false;
+          EventBus.$emit('TYPE', false);
+        }
+      },
+      differ: function (event) {
+        if (event) {
+          this.isDiffer = true;
+          EventBus.$emit('TYPE', true);
+        }
       }
     }
   }
@@ -47,5 +75,8 @@
     box-shadow: none;
     background-color: #333333;
     color: #999999;
+  }
+  input, label {
+    margin-right: 10px;
   }
 </style>
